@@ -1,5 +1,6 @@
 import pyaudio 
 import wave
+import speech_recognition as sr
 
 def record(time, output_file):
     ##Parameters for pyaudio
@@ -33,7 +34,7 @@ def play(output_file):# The size of the buffer.
         p= pyaudio.PyAudio()
         stream = p.open(format=p.get_format_from_width(wf.getsampwidth()), channels=wf.getnchannels(), rate = wf.getframerate(),output=True)  
         data = wf.readframes(CHUNK)
-        while(data != ''):
+        while(len(data)>0):
             stream.write(data)
             data = wf.readframes(CHUNK)
         stream.close()
@@ -41,7 +42,18 @@ def play(output_file):# The size of the buffer.
     toText(output_file)
     
 def toText(output_file):
+    
     print("In process")
+    r = sr.Recognizer()
+    with sr.AudioFile(output_file) as source:
+        audio = r.record(source)
+    try:
+        texto = r.recognize_google(audio, language="es-CO")
+        print(texto)
+    except sr.UnknownError:
+        print("Google no entendió el audio")
+    except sr.RequestError as e:
+        print("Error de conexión a Google service; {0}".format(e))
 
   
 def menu(output_file):
