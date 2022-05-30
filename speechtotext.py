@@ -21,15 +21,46 @@ def record(time, output_file):
     p.terminate()
     with wave.open(output_file,'wb') as wf:
         wf.setnchannels(channels)
-        wf.setsampwidth(p.get_sample_rate(format))
+        wf.setsampwidth(2)
         wf.setframerate(rate)
         wf.writeframes(b''.join(frames))
+    print("Grabación terminada")
+    menu(output_file)
     
+def play(output_file):# The size of the buffer.
+    CHUNK = 1024
+    with wave.open(output_file,'rb') as wf:
+        p= pyaudio.PyAudio()
+        stream = p.open(format=p.get_format_from_width(wf.getsampwidth()), channels=wf.getnchannels(), rate = wf.getframerate(),output=True)  
+        data = wf.readframes(CHUNK)
+        while(data != ''):
+            stream.write(data)
+            data = wf.readframes(CHUNK)
+        stream.close()
+        p.terminate()
+    toText(output_file)
+    
+def toText(output_file):
+    print("In process")
+
+  
+def menu(output_file):
+    x = int(input("Quieres reproducir tu grabacion? (1:Si 0:No)"))
+    if(x ==1):
+        play(output_file)
+    elif(x ==0):
+        toText(output_file)
+    else:
+        print("Ingrese una opcion valida")
+        
 def welcome():
-    output_file = input("Ingrese el nombre del archivo para guardar la grabacion")
+    output_file = input("Ingrese el nombre del archivo para guardar la grabacion ")
     print("Input:" + output_file)
-    time = input("Ingrese el tiempo que desea grabar (Segundos)")
-    print("Input:" + time)        
+    time = input("Ingrese el tiempo que desea grabar (Segundos) ")
+    print("Input:" + time)
+    time = int(time)
+    record(time, output_file) 
+           
     
 if __name__ == "__main__":
     welcome()
