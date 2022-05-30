@@ -42,7 +42,6 @@ def play(output_file):# The size of the buffer.
     toText(output_file)
     
 def toText(output_file):
-    
     print("In process")
     r = sr.Recognizer()
     with sr.AudioFile(output_file) as source:
@@ -64,6 +63,7 @@ def menu(output_file):
         toText(output_file)
     else:
         print("Ingrese una opcion valida")
+        menu(output_file)
         
 def welcome():
     output_file = input("Ingrese el nombre del archivo para guardar la grabacion ")
